@@ -1,13 +1,31 @@
+using Pirvu_Florin_Daniel_Lab2.Data;
+using Pirvu_Florin_Daniel_Lab2;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Pirvu_Florin_Daniel_Lab2.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Pirvu_Florin_Daniel_Lab2Context") ?? throw new InvalidOperationException("Connection string 'Pirvu_Florin_Daniel_Lab2Context' not found.");
 
 builder.Services.AddDbContext<Pirvu_Florin_Daniel_Lab2Context>(options => options.UseSqlServer(connectionString));
 
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<Pirvu_Florin_Daniel_Lab2Context>();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+builder.Services.AddDbContext<Pirvu_Florin_Daniel_Lab2Context>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Pirvu_Florin_Daniel_Lab2Context") ?? throw new InvalidOperationException("Connection string 'Pirvu_Florin_Daniel_Lab2Context' not found.")));
+
+builder.Services.AddDbContext<Pirvu_Florin_Daniel_Lab2.Data.LibraryIdentityContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Pirvu_Florin_Daniel_Lab2Context") ?? throw new InvalidOperationException("Connection string 'Pirvu_Florin_Daniel_Lab2Context' not found.")));
+
+builder.Services.AddDefaultIdentity<Microsoft.AspNetCore.Identity.IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<Pirvu_Florin_Daniel_Lab2.Data.LibraryIdentityContext>();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
