@@ -6,13 +6,19 @@ using Pirvu_Florin_Daniel_Lab2.Data;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Pirvu_Florin_Daniel_Lab2Context") ?? throw new InvalidOperationException("Connection string 'Pirvu_Florin_Daniel_Lab2Context' not found.");
-
-builder.Services.AddDbContext<Pirvu_Florin_Daniel_Lab2Context>(options => options.UseSqlServer(connectionString));
-
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<Pirvu_Florin_Daniel_Lab2Context>();
-
-// Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+});
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeFolder("/Books");
+    options.Conventions.AllowAnonymousToPage("/Books/Index");
+    options.Conventions.AllowAnonymousToPage("/Books/Details");
+    options.Conventions.AuthorizeFolder("/MemberPages", "AdminPolicy");
+    options.Conventions.AuthorizeFolder("/PublisherPages", "AdminPolicy");
+    options.Conventions.AuthorizeFolder("/CategoryPages", "AdminPolicy");
+});
 
 builder.Services.AddDbContext<Pirvu_Florin_Daniel_Lab2Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Pirvu_Florin_Daniel_Lab2Context") ?? throw new InvalidOperationException("Connection string 'Pirvu_Florin_Daniel_Lab2Context' not found.")));
@@ -20,7 +26,8 @@ builder.Services.AddDbContext<Pirvu_Florin_Daniel_Lab2Context>(options =>
 builder.Services.AddDbContext<Pirvu_Florin_Daniel_Lab2.Data.LibraryIdentityContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Pirvu_Florin_Daniel_Lab2Context") ?? throw new InvalidOperationException("Connection string 'Pirvu_Florin_Daniel_Lab2Context' not found.")));
 
-builder.Services.AddDefaultIdentity<Microsoft.AspNetCore.Identity.IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<Pirvu_Florin_Daniel_Lab2.Data.LibraryIdentityContext>();
 
 var app = builder.Build();

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,6 +7,7 @@ using Pirvu_Florin_Daniel_Lab2.Models;
 
 namespace Pirvu_Florin_Daniel_Lab2.Pages.BookPages;
 
+[Authorize(Roles = "Admin")]
 public class CreateModel : BookCategoriesPageModel
 {
     private readonly Pirvu_Florin_Daniel_Lab2Context _context;
@@ -66,3 +68,4 @@ public class CreateModel : BookCategoriesPageModel
         return RedirectToPage("./Index");
     }
 }
+
